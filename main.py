@@ -7,24 +7,27 @@ from util import util
 import os
 
 
-style="style_ukiyoe"
-if __name__ == '__main__':
-    opt = TestOptions().parse()  # get test options
- 
-    # hard-code some parameters for test
+
+
+opt = TestOptions().parse()  # get test options
+
+# hard-code some parameters for test
+
+opt.gpu_ids=[]
+opt.model= "test"
+opt.no_dropout = True   # no dropout for the generator
+opt.num_threads = 0   # test code only supports num_threads = 0
+opt.batch_size = 1    # test code only supports batch_size = 1
+opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
+opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
+opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
+
+
+def stylise(style,img):
+    # style="style_ukiyoe"
+    # img = Image.open("./input/Me.jpg")
+
     opt.name= style
-    opt.model= "test"
-    opt.no_dropout = True   # no dropout for the generator
-    opt.num_threads = 0   # test code only supports num_threads = 0
-    opt.batch_size = 1    # test code only supports batch_size = 1
-    opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
-    opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
-    opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
-    
-
-
-    img = Image.open("./input/Me.jpg")
-
     transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
@@ -54,13 +57,13 @@ if __name__ == '__main__':
         for label, im_data in visuals.items():
            
             im = util.tensor2im(im_data)
-            image_name = '%s_%s.png' % ("name", label)
-            save_path = os.path.join("results", image_name)
             image_pil = Image.fromarray(im)
-            
             if label=="fake":
-                image_pil.show()
+                # image_pil.show()
+                return image_pil
             # util.save_image(im, save_path, aspect_ratio=1.0)
         
 
-  
+# style="style_ukiyoe"
+# img = Image.open("./input/Me.jpg")
+# stylise(style,img)
